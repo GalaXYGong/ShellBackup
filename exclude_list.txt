@@ -1,0 +1,29 @@
+# what to ignore
+.git*/
+.git/
+Code/
+bilibili/
+google-chrome
+heroic
+
+# ignore temp files and logs
+*.log
+tmp/
+cache/
+Cache*/
+
+
+# ignore system generated files
+.DS_Store
+Thumbs.db
+._*
+
+# python
+venv/
+.venv/
+env/
+.vscode/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
