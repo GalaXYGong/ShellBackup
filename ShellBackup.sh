@@ -1,24 +1,34 @@
 #!/bin/bash
-CONFIG_FILE="$(dirname "$0")"/ShellBackup.conf
-TASKS="$(dirname "$0")"/Tasks.conf
+WORKING_DIR="$(dirname "$0")"
+CONFIG_FILE="$WORKING_DIR/ShellBackup.conf"
+CONFIG_FILE_PROD="$WORKING_DIR/ShellBackup_prod.conf"
+TASKS="$WORKING_DIR/Tasks.conf"
 DATE=$(date +%Y-%m-%d)
 NOW=$(date +%Y%m%d_%H%M)
 CONTENT_FOLDER="Content"
-EXCLUDE_FILE="$(dirname "$0")"/exclude_list.txt
+EXCLUDE_FILE="$WORKING_DIR/exclude_list.txt"
 EXCLUDE_OPT=""
 
+# Load configuration
 if [ -f $CONFIG_FILE ]; then
     source $CONFIG_FILE
+# production config will be overrided by developer config
+elif [ -f $CONFIG_FILE_PROD ]; then
+    source $CONFIG_FILE_PROD
+# else if no config file found, exit with error
 else
-    echo "Error: Can't find config file $CONFIG_FILE"
+    echo "Error: Can't find config file $CONFIG_FILE or $CONFIG_FILE_PROD"
     exit 1
 fi
 
+# check if the mounting point is mounted    
 if mountpoint -q "$MOUNTING_POINT"; then
     echo "$MOUNTING_POINT has been mounted. ShellBackup will start"
 else
+    # if not mounted, try to mount it
     echo "mounting $MOUNTING_POINT"
     mount $MOUNTING_POINT
+    # check if mounting is successful
     if [ $? -ne 0 ]; then
         echo "ERROR: $MOUNTING_POINT can not be mounted ShellBackup won't start"
         exit 1
@@ -30,13 +40,14 @@ if [ -f "$EXCLUDE_FILE" ]; then
     EXCLUDE_OPT="--exclude-from=$EXCLUDE_FILE"
 fi
 
+# Read tasks and perform backup
 if [ -f $TASKS ]; then
     while IFS="|" read -r NAME PARENT_DIR SOURCE_DIR; do
         if [[ $NAME == *\#*  ]]; then
             echo "Skipping comment: $NAME"
             continue
         fi
-        if [[ -z "$PARENT_DIR" || -z "SOURCE_DIR" ]]; then
+        if [[ -z "$PARENT_DIR" || -z "$SOURCE_DIR" ]]; then
             echo "Skip Non-Tasks: $NAME"
             continue
         fi
