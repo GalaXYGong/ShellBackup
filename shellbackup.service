@@ -1,0 +1,14 @@
+# just a sample of unit file for service
+[Unit]
+Description=Shell Backup Service
+
+[Service]
+Type=oneshot
+# put your abosolute path here
+ExecStart=/bin/bash /home/galaxygong/scripts/ShellBackup
+# who is the user
+User=galaxygong
+
+[Install]
+WantedBy=multi-user.target
+
