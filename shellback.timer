@@ -1,0 +1,16 @@
+[Unit]
+Description=Run My Custom Script Every Hour
+
+[Timer]
+# 相对时间：开机后 15 分钟第一次运行
+OnBootSec=15min
+# 周期时间：之后每隔 31 小时运行一次
+OnUnitActiveSec=3h
+# 或者使用绝对时间（类似cron）：每天凌晨 2:30
+OnCalendar=*-*-* 02:30:00
+
+# 错过时间是否立即补执行（例如关机错过了时间）
+Persistent=true
+
+[Install]
+WantedBy=timers.target
